@@ -1,0 +1,77 @@
+CREATE DATABASE AuctionHouse;
+GO
+
+USE AuctionHouse;
+GO
+
+CREATE TABLE Persons (
+    PersonID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName NVARCHAR(255) NOT NULL,
+    LastName NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Sellers (
+    SellerID INT PRIMARY KEY,
+    PersonID INT NOT NULL UNIQUE,
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+
+CREATE TABLE Buyers (
+    BuyerID INT PRIMARY KEY,
+    PersonID INT NOT NULL UNIQUE,
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+
+CREATE TABLE Items (
+    ItemID INT PRIMARY KEY IDENTITY(1,1),
+    ItemName NVARCHAR(255) NOT NULL,
+    ItemDescription NVARCHAR(255) NULL
+);
+
+CREATE TABLE Countries (
+    CountryID INT PRIMARY KEY IDENTITY(1,1),
+    CountryName NVARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Cities (
+    CityID INT PRIMARY KEY IDENTITY(1,1),
+    CityName NVARCHAR(255) NOT NULL,
+    CountryID INT NOT NULL,
+    FOREIGN KEY (CountryID) REFERENCES Countries(CountryID)
+);
+
+CREATE TABLE Auctions (
+    AuctionID INT PRIMARY KEY IDENTITY(1,1),
+    AuctionDate DATETIME NOT NULL,
+    AddressLine NVARCHAR(255) NOT NULL,
+    CityID INT NOT NULL,
+    SpecialNotes NVARCHAR(255) NULL,
+    FOREIGN KEY (CityID) REFERENCES Cities(CityID)
+);
+
+CREATE TABLE LotNumbers (
+    LotNumberID INT PRIMARY KEY IDENTITY(1,1),
+    LotNumber INT NOT NULL,
+    AuctionID INT NOT NULL,
+    ItemID INT NOT NULL,
+    FOREIGN KEY (AuctionID) REFERENCES Auctions(AuctionID),
+    FOREIGN KEY (ItemID) REFERENCES Items(ItemID)
+);
+
+CREATE TABLE SellerItems (
+    SellerItemID INT PRIMARY KEY IDENTITY(1,1),
+    SellerID INT NOT NULL,
+    ItemID INT NOT NULL,
+    StartingPrice DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (SellerID) REFERENCES Sellers(SellerID),
+    FOREIGN KEY (ItemID) REFERENCES Items(ItemID)
+);
+
+CREATE TABLE Sales (
+    SaleID INT PRIMARY KEY IDENTITY(1,1),
+    LotNumberID INT NOT NULL,
+    BuyerID INT NOT NULL,
+    ActualPrice DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (LotNumberID) REFERENCES LotNumbers(LotNumberID),
+    FOREIGN KEY (BuyerID) REFERENCES Buyers(BuyerID)
+);
